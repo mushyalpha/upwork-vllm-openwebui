@@ -2,7 +2,6 @@
 
 Official images in `docker-compose.yml`. Stock RunPod GPU pods cannot run Compose (the pod is already a container). On RunPod use `runpod-start.sh`.
 
-Do not commit `.env`. Do not put an email, phone, or token in this repo.
 
 ## 1. Upload to GitHub (laptop)
 
@@ -10,7 +9,7 @@ GitHub website:
 
 1. New repository → name it whatever you want → **private** is fine.
 2. **Add file → Upload files**
-3. Drop in: `docker-compose.yml`, `.env.example`, `.gitignore`, `runpod-start.sh`, `README.md`
+3. Drop in: `docker-compose.yml`, `.gitignore`, `runpod-start.sh`, `README.md`
 4. Commit. Copy the repo URL.
 
 Or from a terminal:
@@ -18,7 +17,7 @@ Or from a terminal:
 ```bash
 cd ~/Desktop/upwork-vllm-openwebui
 git init
-git add docker-compose.yml .env.example .gitignore runpod-start.sh README.md
+git add docker-compose.yml .gitignore runpod-start.sh README.md
 git commit -m "Add vLLM + Open WebUI RunPod sample."
 gh repo create runpod-vllm-openwebui --private --source=. --remote=origin --push
 ```
@@ -42,9 +41,6 @@ cd /tmp
 git clone https://github.com/mushyalpha/upwork-vllm-openwebui.git
 mv upwork-vllm-openwebui /workspace/
 cd /workspace/upwork-vllm-openwebui
-
-cp .env.example .env
-nano .env          # paste HF_TOKEN and VLLM_API_KEY, save
 
 chmod +x runpod-start.sh
 ./runpod-start.sh
@@ -80,4 +76,4 @@ If you cannot fit both panes in one image, two files are fine.
 
 ## 5. After you have the PNGs
 
-Stop the pod so you are not billed. Attach the two PNGs plus `docker-compose.yml` on the proposal. Do not attach `.env`.
+Stop the pod so you are not billed. Attach the two PNGs plus `docker-compose.yml` on the proposal.

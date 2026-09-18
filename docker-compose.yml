@@ -1,13 +1,3 @@
-# Official pinned images only. vLLM serves Qwen2.5-7B-Instruct on GPU
-# (OpenAI-compatible API + streaming, API-key auth) at :8000. Open WebUI at :3000.
-# Weights bind-mount to /workspace so a RunPod restart does not re-download 15GB.
-#
-#   export HF_TOKEN=... VLLM_API_KEY=...
-#   docker compose up -d
-#
-# Stock RunPod GPU pods cannot run Compose (no nested Docker). Use
-# runpod-start.sh on the pod. This file is the client deliverable.
-
 services:
   vllm:
     image: vllm/vllm-openai:v0.28.0-cu129
@@ -18,7 +8,6 @@ services:
       - /workspace/hf-cache:/root/.cache/huggingface
     environment:
       HF_TOKEN: ${HF_TOKEN:-}
-      VLLM_API_KEY: ${VLLM_API_KEY:?set VLLM_API_KEY}
     deploy:
       resources:
         reservations:
@@ -35,8 +24,6 @@ services:
       - "0.0.0.0"
       - --port
       - "8000"
-      - --api-key
-      - ${VLLM_API_KEY}
       - --dtype
       - auto
       - --max-model-len
@@ -67,7 +54,7 @@ services:
       ENABLE_OLLAMA_API: "false"
       ENABLE_PERSISTENT_CONFIG: "false"
       OPENAI_API_BASE_URL: http://vllm:8000/v1
-      OPENAI_API_KEY: ${VLLM_API_KEY:?set VLLM_API_KEY}
+      OPENAI_API_KEY: "not-needed"
     depends_on:
       vllm:
         condition: service_healthy

@@ -4,19 +4,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-if [[ -f .env ]]; then
-  set -a
-  # shellcheck disable=SC1091
-  source .env
-  set +a
-fi
-
-: "${VLLM_API_KEY:?Set VLLM_API_KEY in .env}"
-: "${HF_TOKEN:?Set HF_TOKEN in .env (Qwen2.5-Instruct is gated)}"
-
 export HF_HOME="${HF_HOME:-/workspace/hf-cache}"
-export HF_TOKEN
-export HUGGING_FACE_HUB_TOKEN="$HF_TOKEN"
 mkdir -p "$HF_HOME" /workspace/open-webui /workspace/logs
 
 echo "==> GPU"
@@ -40,7 +28,6 @@ else
     --served-model-name Qwen2.5-7B-Instruct \
     --host 0.0.0.0 \
     --port 8000 \
-    --api-key "$VLLM_API_KEY" \
     --dtype auto \
     --max-model-len 8192 \
     --gpu-memory-utilization 0.90 \
@@ -68,7 +55,7 @@ else
   export ENABLE_OLLAMA_API=false
   export ENABLE_PERSISTENT_CONFIG=false
   export OPENAI_API_BASE_URL=http://127.0.0.1:8000/v1
-  export OPENAI_API_KEY="$VLLM_API_KEY"
+  export OPENAI_API_KEY="not-needed"
   export DATA_DIR=/workspace/open-webui
   nohup open-webui serve --host 0.0.0.0 --port 3000 \
     >/workspace/logs/open-webui.log 2>&1 &
@@ -80,7 +67,7 @@ echo
 echo "==> Screenshot 1: this nvidia-smi (vLLM should be listed under Processes)"
 nvidia-smi
 echo
-curl -sS -H "Authorization: Bearer ${VLLM_API_KEY}" http://127.0.0.1:8000/v1/models
+curl -sS http://127.0.0.1:8000/v1/models
 echo
 echo "Open WebUI via RunPod Connect → HTTP service 3000"
 echo "Keep GPU busy for screenshot 2:"
