@@ -11,12 +11,10 @@ echo "==> GPU"
 nvidia-smi
 
 if ! python3 -c "import vllm" >/dev/null 2>&1; then
-  echo "==> Installing vLLM"
-  python3 -m pip install -U vllm
+  python3 -m pip install -U --ignore-installed cryptography vllm
 fi
 if ! command -v open-webui >/dev/null 2>&1; then
-  echo "==> Installing Open WebUI"
-  python3 -m pip install -U open-webui
+  python3 -m pip install -U --ignore-installed cryptography open-webui
 fi
 
 if curl -sf http://127.0.0.1:8000/health >/dev/null 2>&1; then
