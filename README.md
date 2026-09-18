@@ -38,9 +38,10 @@ In RunPod → Deploy:
 Web terminal or SSH:
 
 ```bash
-cd /workspace
-git clone https://github.com/YOUR_USER/YOUR_REPO.git
-cd YOUR_REPO
+cd /tmp
+git clone https://github.com/mushyalpha/upwork-vllm-openwebui.git
+mv upwork-vllm-openwebui /workspace/
+cd /workspace/upwork-vllm-openwebui
 
 cp .env.example .env
 nano .env          # paste HF_TOKEN and VLLM_API_KEY, save
