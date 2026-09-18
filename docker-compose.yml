@@ -1,0 +1,74 @@
+# Official pinned images only. vLLM serves Qwen2.5-7B-Instruct on GPU
+# (OpenAI-compatible API + streaming, API-key auth) at :8000. Open WebUI at :3000.
+# Weights bind-mount to /workspace so a RunPod restart does not re-download 15GB.
+#
+#   export HF_TOKEN=... VLLM_API_KEY=...
+#   docker compose up -d
+#
+# Stock RunPod GPU pods cannot run Compose (no nested Docker). Use
+# runpod-start.sh on the pod. This file is the client deliverable.
+
+services:
+  vllm:
+    image: vllm/vllm-openai:v0.28.0-cu129
+    ipc: host
+    ports:
+      - "8000:8000"
+    volumes:
+      - /workspace/hf-cache:/root/.cache/huggingface
+    environment:
+      HF_TOKEN: ${HF_TOKEN:-}
+      VLLM_API_KEY: ${VLLM_API_KEY:?set VLLM_API_KEY}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    command:
+      - --model
+      - Qwen/Qwen2.5-7B-Instruct
+      - --served-model-name
+      - Qwen2.5-7B-Instruct
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8000"
+      - --api-key
+      - ${VLLM_API_KEY}
+      - --dtype
+      - auto
+      - --max-model-len
+      - "8192"
+      - --gpu-memory-utilization
+      - "0.90"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python3",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 10m
+    restart: unless-stopped
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:v0.11.3
+    ports:
+      - "3000:8080"
+    volumes:
+      - /workspace/open-webui:/app/backend/data
+    environment:
+      ENABLE_OLLAMA_API: "false"
+      ENABLE_PERSISTENT_CONFIG: "false"
+      OPENAI_API_BASE_URL: http://vllm:8000/v1
+      OPENAI_API_KEY: ${VLLM_API_KEY:?set VLLM_API_KEY}
+    depends_on:
+      vllm:
+        condition: service_healthy
+    restart: unless-stopped
