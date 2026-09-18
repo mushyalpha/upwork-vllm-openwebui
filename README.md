@@ -42,8 +42,7 @@ git clone https://github.com/mushyalpha/upwork-vllm-openwebui.git
 mv upwork-vllm-openwebui /workspace/
 cd /workspace/upwork-vllm-openwebui
 
-chmod +x runpod-start.sh
-./runpod-start.sh
+bash runpod-start.sh
 ```
 
 First run downloads ~15 GB. Wait until the script prints `vLLM is up` and dumps `nvidia-smi`.
